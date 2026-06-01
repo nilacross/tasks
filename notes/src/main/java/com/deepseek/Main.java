@@ -7,7 +7,7 @@ public class Main {
     private static final NoteManager noteManager = new NoteManager();
 
     static void main() {
-        System.out.println("=== Note Management System ===");
+        System.out.println("===== Note Management System =====");
 
         while (true) {
             printMenu();
