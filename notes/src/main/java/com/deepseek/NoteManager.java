@@ -1,17 +1,16 @@
 package com.deepseek;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class NoteManager {
-    private List<Note> notes;
+    private final List<Note> notes;
 
     public NoteManager() {
-        notes = new ArrayList<>();
+        notes = FileStorage.loadNotes();
     }
 
-    public boolean addNote(Note note) {
+    public void addNote(Note note) {
         if (note.getTitle() == null || note.getTitle().trim().isEmpty()) {
             System.out.println("Title cannot be null or empty");
             return false;
@@ -24,6 +23,8 @@ public class NoteManager {
             }
         }
         notes.add(note);
+        saveToFile(); // Автоматически сохраняем после добавления
+        System.out.println("Note is added");
         return true;
     }
 
@@ -37,7 +38,7 @@ public class NoteManager {
         }
     }
 
-    public boolean deleteNote(String title) {
+    public void deleteNote(String title) {
         //notes.removeIf(note1 -> note1.getTitle().equalsIgnoreCase(title));
         Iterator<Note> iterator = notes.iterator();
         while (iterator.hasNext()) {
@@ -45,6 +46,7 @@ public class NoteManager {
             if (note.getTitle().equalsIgnoreCase(title)) {
                 iterator.remove();
                 System.out.println("Note '" + note.getTitle() + "' deleted");
+                saveToFile();// Автоматически сохраняем после удаления
                 return true;
             }
         }
@@ -61,7 +63,7 @@ public class NoteManager {
 
         for (Note note : notes) {
             if (note.getTitle().toLowerCase().contains(notePart.toLowerCase())
-                    ||  note.getContent().toLowerCase().contains(notePart.toLowerCase())) {
+                    || note.getContent().toLowerCase().contains(notePart.toLowerCase())) {
                 System.out.println(note.getTitle());
                 System.out.println("\t" + note.getContent());
                 found = true;
@@ -70,6 +72,11 @@ public class NoteManager {
         if (!found) {
             System.out.println("Note '" + notePart + "' not found");
         }
+    }
+
+    //сохранить текущий список в файл
+    private void saveToFile() {
+        FileStorage.saveNotes(notes);
     }
 
 }

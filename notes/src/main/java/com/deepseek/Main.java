@@ -8,6 +8,7 @@ public class Main {
 
     static void main() {
         System.out.println("===== Note Management System =====");
+        FileStorage.showCurrentDirectory();
 
         while (true) {
             printMenu();
