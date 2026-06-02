@@ -13,19 +13,16 @@ public class NoteManager {
     public void addNote(Note note) {
         if (note.getTitle() == null || note.getTitle().trim().isEmpty()) {
             System.out.println("Title cannot be null or empty");
-            return false;
         }
 
         for (Note n : notes) {
             if (n.getTitle().equalsIgnoreCase(note.getTitle())) {
                 System.out.println("Note already exists");
-                return false;
             }
         }
         notes.add(note);
         saveToFile(); // Автоматически сохраняем после добавления
         System.out.println("Note is added");
-        return true;
     }
 
     public void showAllNotes() {
@@ -47,11 +44,9 @@ public class NoteManager {
                 iterator.remove();
                 System.out.println("Note '" + note.getTitle() + "' deleted");
                 saveToFile();// Автоматически сохраняем после удаления
-                return true;
             }
         }
         System.out.println("Note '" + title + "' not found");
-        return false;
     }
 
     public void findNote(String notePart) {

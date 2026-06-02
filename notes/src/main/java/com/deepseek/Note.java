@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Note implements Serializable {
-    private String title;
-    private String content;
+    private final String title;
+    private final String content;
 
     public Note(String title, String content) {
         this.title = title;
