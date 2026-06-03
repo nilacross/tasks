@@ -7,31 +7,38 @@ public class NoteManager {
     private final List<Note> notes;
 
     public NoteManager() {
+        System.out.println("\n=== " + LocalizationManager.get("menu.title") + "===\n");
+        System.out.println(LocalizationManager.get("menu.auto_save"));
         notes = FileStorage.loadNotes();
     }
 
     public void addNote(Note note) {
         if (note.getTitle() == null || note.getTitle().trim().isEmpty()) {
-            System.out.println("Title cannot be null or empty");
+            System.out.println(LocalizationManager.get("add.error.empty_title"));
         }
 
         for (Note n : notes) {
             if (n.getTitle().equalsIgnoreCase(note.getTitle())) {
-                System.out.println("Note already exists");
+                System.out.println(LocalizationManager.get("add.error.duplicate", note.getTitle()));
             }
         }
         notes.add(note);
         saveToFile(); // Автоматически сохраняем после добавления
-        System.out.println("Note is added");
+        System.out.println(LocalizationManager.get("add.success"));
     }
 
     public void showAllNotes() {
-        System.out.println("List of Notes:");
-        for (Note note : notes) {
-            System.out.println(note.getTitle());
-            String croppedText = note.getContent();
-            if (croppedText.length() > 20) croppedText = croppedText.substring(0, 20);
-            System.out.println("\t" + croppedText);
+        if (notes.isEmpty()) {
+            System.out.println(LocalizationManager.get("show.empty"));
+            return;
+        }
+        System.out.println(LocalizationManager.get("show.list"));
+
+        for (int i = 0; i < notes.size(); i++) {
+            Note note = notes.get(i);
+            String preview = note.getContent();
+            if (preview.length() > 20) preview = preview.substring(0, 20);
+            System.out.println((i+1) + "." + note.getTitle() + " -> " + preview);
         }
     }
 
@@ -42,16 +49,16 @@ public class NoteManager {
             Note note = iterator.next();
             if (note.getTitle().equalsIgnoreCase(title)) {
                 iterator.remove();
-                System.out.println("Note '" + note.getTitle() + "' deleted");
+                System.out.println(LocalizationManager.get("delete.success"));
                 saveToFile();// Автоматически сохраняем после удаления
             }
         }
-        System.out.println("Note '" + title + "' not found");
+        System.out.println(LocalizationManager.get("delete.not_found", title));
     }
 
     public void findNote(String notePart) {
         if (notePart == null || notePart.trim().isEmpty()) {
-            System.out.println("Enter search query");
+            System.out.println(LocalizationManager.get("find.prompt"));
             return;
         }
         boolean found = false;
@@ -65,7 +72,7 @@ public class NoteManager {
             }
         }
         if (!found) {
-            System.out.println("Note '" + notePart + "' not found");
+            System.out.println(LocalizationManager.get("find.not_found"));
         }
     }
 
@@ -73,5 +80,4 @@ public class NoteManager {
     private void saveToFile() {
         FileStorage.saveNotes(notes);
     }
-
 }

@@ -4,11 +4,11 @@ import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
-    private static final NoteManager noteManager = new NoteManager();
+    private static NoteManager manager;
 
     static void main() {
-        System.out.println("===== Note Management System =====");
-        FileStorage.showCurrentDirectory();
+        LocalizationManager.printCurrentLanguage(); //показываем текущий язык
+        manager = new NoteManager();  //инициализация не сразу, чтобы не опередить язык
 
         while (true) {
             printMenu();
@@ -19,7 +19,7 @@ public class Main {
                     addNoteFlow();
                     break;
                 case "2":
-                    noteManager.showAllNotes();
+                    manager.showAllNotes();
                     break;
                 case "3":
                     findNoteFlow();
@@ -28,10 +28,12 @@ public class Main {
                     deleteNoteFlow();
                     break;
                 case "5":
-                    System.out.println("Good by!");
+                    break;
+                case "6":
+                    System.out.println(LocalizationManager.get("exit.goodbye"));
                     return;
                 default:
-                    System.out.println("Invalid input! Try again!");
+                    System.out.println(LocalizationManager.get("error.invalid_input"));
 
             }
             System.out.println();
@@ -39,32 +41,40 @@ public class Main {
     }
 
     private static void printMenu() {
-        System.out.println("Choose an option:");
-        System.out.println("1. Add note");
-        System.out.println("2. Show all notes");
-        System.out.println("3. Find note");
-        System.out.println("4. Delete note");
-        System.out.println("5. Exit");
+        System.out.println(LocalizationManager.get("menu.prompt"));
+        System.out.println(LocalizationManager.get("menu.option1"));
+        System.out.println(LocalizationManager.get("menu.option2"));
+        System.out.println(LocalizationManager.get("menu.option3"));
+        System.out.println(LocalizationManager.get("menu.option4"));
+        System.out.println(LocalizationManager.get("menu.option5"));
+        System.out.println(LocalizationManager.get("menu.option6"));
         System.out.println(">");
     }
 
     public static void addNoteFlow() {
-        System.out.println("Enter title:");
+        System.out.println(LocalizationManager.get("add.title_prompt"));
         String title = scanner.nextLine();
-        System.out.println("Enter note content:");
+        System.out.println(LocalizationManager.get("add.content_prompt"));
         String note = scanner.nextLine();
-        noteManager.addNote(new Note(title, note));
+        manager.addNote(new Note(title, note));
     }
 
     public static void findNoteFlow() {
-        System.out.println("Enter word or text part for search:");
+        System.out.println(LocalizationManager.get("find.prompt"));
         String notePart = scanner.nextLine();
-        noteManager.findNote(notePart);
+        manager.findNote(notePart);
     }
 
     public static void deleteNoteFlow() {
-        System.out.println("Enter exact note title for delete:");
+        System.out.println(LocalizationManager.get("delete.prompt"));
         String title = scanner.nextLine();
-        noteManager.deleteNote(title);
+        manager.deleteNote(title);
+    }
+
+    private static void changeLanguageFlow() {
+        LocalizationManager.showLanguageMenu();
+        String choice = scanner.nextLine().trim();
+        if(LocalizationManager.handelLanguageChoice(choice)) manager = new NoteManager(); //пересоздаем менеджер для обновления сообщений
+        else System.out.println(LocalizationManager.get("error.invalid_input"));
     }
 }
