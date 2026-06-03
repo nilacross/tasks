@@ -21,9 +21,9 @@ public class LocalizationManager {
     private static void loadLanguage() {
         currentLanguage = prefs.get(PREF_LANGUAGE, DEFAULT_LANGUAGE);
         try {
-            bundle = ResourceBundle.getBundle("messages", new Locale(currentLanguage));
+            bundle = ResourceBundle.getBundle("messages", Locale.of(currentLanguage));
         } catch (MissingResourceException e) {
-            bundle = ResourceBundle.getBundle("messages", new Locale(DEFAULT_LANGUAGE));
+            bundle = ResourceBundle.getBundle("messages", Locale.of(DEFAULT_LANGUAGE));
         }
     }
 
@@ -48,10 +48,6 @@ public class LocalizationManager {
         }
     }
 
-    public static String getCurrentLanguage() {
-        return currentLanguage;
-    }
-
     public static void showLanguageMenu() {
         System.out.println("\n" + get("language.select"));
         System.out.println(get("language.option1"));
@@ -60,11 +56,11 @@ public class LocalizationManager {
     }
 
     public static boolean handelLanguageChoice(String input) {
-        if (input.equals(1)) {
+        if (input.equals("1")) {
             setLanguage("en");
             System.out.println(get("language.changed"));
             return true;
-        } else if (input.equals(2)) {
+        } else if (input.equals("2")) {
             setLanguage("ru");
             System.out.println(get("language.changed"));
             return true;
