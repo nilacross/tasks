@@ -69,7 +69,8 @@ public class LocalizationManager {
     }
 
     public static void printCurrentLanguage() {
-        String langName = currentLanguage.equals("en") ? "English" : "Русский";
-        System.out.println(get("language.current") + ": " + langName);
+        //String langName = currentLanguage.equals("en") ? "English" : "Русский";
+        //System.out.println(get("language.current") + ": " + langName);
+        System.out.println(get("language.current"));
     }
 }

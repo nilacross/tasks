@@ -7,6 +7,7 @@ public class Main {
     private static NoteManager manager;
 
     static void main() {
+       // FileStorage.resetPath(); //временно, чтоб каждый раз появлялась менюшка с сохранением файла
         LocalizationManager.printCurrentLanguage(); //показываем текущий язык
         manager = new NoteManager();  //инициализация не сразу, чтобы не опередить язык
 
@@ -28,6 +29,7 @@ public class Main {
                     deleteNoteFlow();
                     break;
                 case "5":
+                    changeLanguageFlow();
                     break;
                 case "6":
                     System.out.println(LocalizationManager.get("exit.goodbye"));

@@ -29,12 +29,12 @@ public class FileStorage {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\n" + LocalizationManager.get("file.storage.setup"));
-        System.out.println("\n" + LocalizationManager.get("file.storage.prompt"));
-        System.out.println("\n" + LocalizationManager.get("file.storage.option1"));
-        System.out.println("\n" + LocalizationManager.get("file.storage.option2"));
-        System.out.println("\n" + LocalizationManager.get("file.storage.option3"));
-        System.out.println("\n" + LocalizationManager.get("file.storage.choice"));
+        System.out.println(LocalizationManager.get("file.storage.setup"));
+        System.out.println(LocalizationManager.get("file.storage.prompt"));
+        System.out.println(LocalizationManager.get("file.storage.option1"));
+        System.out.println(LocalizationManager.get("file.storage.option2"));
+        System.out.println(LocalizationManager.get("file.storage.option3"));
+        System.out.println(LocalizationManager.get("file.storage.choice"));
 
         String choice = scanner.nextLine().trim();
 
@@ -101,8 +101,23 @@ public class FileStorage {
         return storagePath + FILE_NAME;
     }
 
+    private static String getFilePathWithoutPrompt(){
+        if (storagePath != null) {
+            return storagePath + FILE_NAME;
+        }
+        //временный путь
+        return System.getProperty("user.dir") + File.separator + FILE_NAME;
+    }
+
+    private static void ensurePathSelected() {
+        if (!pathSelected && storagePath == null) {
+            selectPath();
+        }
+    }
+
     // Сохранить все заметки в файл
     public static void saveNotes(List<Note> notes) {
+        ensurePathSelected();   //проверяем путь только в момент сохранения
         String filePath =  getFilePath();
         File file = new File(filePath);
 
@@ -122,7 +137,7 @@ public class FileStorage {
 
     @SuppressWarnings("unchecked")
     public static List<Note> loadNotes() {
-        String filePath = getFilePath();
+        String filePath = getFilePathWithoutPrompt();//getFilePath(); //при загрузке не спрашиваем путь, если файла нет
         File file = new File(filePath);
         if (!file.exists()) {
             System.out.println(LocalizationManager.get("file.not_found", filePath));
