@@ -1,6 +1,7 @@
 package com.deepseek;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,6 +25,10 @@ public class FileStorage {
         }
     }
 
+    public static String getStoragePath() {
+        return storagePath;
+    }
+
     private static void selectPath() {
         if (pathSelected) return;
 
@@ -44,15 +49,12 @@ public class FileStorage {
                         .getCodeSource()
                         .getLocation()
                         .getPath();
-                try {
-                    jarPath = java.net.URLDecoder.decode(jarPath, "UTF-8");
-                    File jarFile = new File(jarPath);
-                    if (jarFile.isFile()) {
-                        storagePath = jarFile.getParent() + File.separator;
-                    } else {
-                        storagePath = System.getProperty("user.dir") + File.separator;
-                    }
-                } catch (UnsupportedEncodingException e) {
+
+                jarPath = java.net.URLDecoder.decode(jarPath, StandardCharsets.UTF_8);
+                File jarFile = new File(jarPath);
+                if (jarFile.isFile()) {
+                    storagePath = jarFile.getParent() + File.separator;
+                } else {
                     storagePath = System.getProperty("user.dir") + File.separator;
                 }
                 break;
@@ -72,16 +74,16 @@ public class FileStorage {
                 break;
 
             default:
-                storagePath = System.getProperty("user.dir") + File.separator;
-
+//                storagePath = System.getProperty("user.dir") + File.separator;
+                System.out.println(LocalizationManager.get("error.invalid_input"));
+                selectPath();
         }
 
         File dir = new File(storagePath);
         if (!dir.exists()) {
             if (dir.mkdirs()) {
                 System.out.println(LocalizationManager.get("file.storage.created_folder", storagePath));
-            }
-            else  {
+            } else {
                 System.out.println(LocalizationManager.get("file.storage.failed_create"));
                 storagePath = System.getProperty("user.dir") + File.separator;
             }
@@ -90,18 +92,18 @@ public class FileStorage {
         prefs.put(PREF_STORAGE_PATH, storagePath);
         pathSelected = true;
 
-        System.out.println(LocalizationManager.get("file.storage.path_set", storagePath) );
+        System.out.println(LocalizationManager.get("file.storage.path_set", storagePath));
         System.out.println("=======================================\n");
     }
 
-    public static String getFilePath(){
+    public static String getFilePath() {
         if (storagePath == null) {
             selectPath();
         }
         return storagePath + FILE_NAME;
     }
 
-    private static String getFilePathWithoutPrompt(){
+    private static String getFilePathWithoutPrompt() {
         if (storagePath != null) {
             return storagePath + FILE_NAME;
         }
@@ -109,21 +111,28 @@ public class FileStorage {
         return System.getProperty("user.dir") + File.separator + FILE_NAME;
     }
 
-    private static void ensurePathSelected() {
+    public static boolean ensurePathSelected() {
         if (!pathSelected && storagePath == null) {
             selectPath();
+            return true;
         }
+        return false;
     }
 
     // Сохранить все заметки в файл
     public static void saveNotes(List<Note> notes) {
-        ensurePathSelected();   //проверяем путь только в момент сохранения
-        String filePath =  getFilePath();
+        if (storagePath == null) {
+            throw new IllegalStateException(LocalizationManager.get("file.storage.path_empty"));
+        }
+
+        String filePath = getFilePath();
         File file = new File(filePath);
 
         File dir = file.getParentFile();
         if (dir != null && !dir.exists()) {
-            dir.mkdirs();
+            if(dir.mkdirs()) System.out.println(LocalizationManager.get("file.storage.created_folder"));
+
+
         }
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
@@ -149,10 +158,11 @@ public class FileStorage {
             System.out.println(LocalizationManager.get("file.load", notes.size(), filePath));
             return notes;
         } catch (IOException | ClassNotFoundException e) {
-            System.out.println(LocalizationManager.get("file.error.load" , e.getMessage()));
+            System.out.println(LocalizationManager.get("file.error.load", e.getMessage()));
             return new ArrayList<>();
         }
     }
+
     public static void resetPath() {
         prefs.remove(PREF_STORAGE_PATH);
         storagePath = null;

@@ -15,11 +15,13 @@ public class NoteManager {
     public void addNote(Note note) {
         if (note.getTitle() == null || note.getTitle().trim().isEmpty()) {
             System.out.println(LocalizationManager.get("add.error.empty_title"));
+            return;
         }
 
         for (Note n : notes) {
             if (n.getTitle().equalsIgnoreCase(note.getTitle())) {
                 System.out.println(LocalizationManager.get("add.error.duplicate", note.getTitle()));
+                return;
             }
         }
         notes.add(note);
@@ -37,23 +39,29 @@ public class NoteManager {
         for (int i = 0; i < notes.size(); i++) {
             Note note = notes.get(i);
             String preview = note.getContent();
-            if (preview.length() > 20) preview = preview.substring(0, 20);
-            System.out.println((i+1) + "." + note.getTitle() + " -> " + preview);
+            if (preview.length() > 20) preview = preview.substring(0, 20) + "...";
+            System.out.println((i + 1) + ") " + note.getTitle() + " -> " + preview);
         }
     }
 
     public void deleteNote(String title) {
-        //notes.removeIf(note1 -> note1.getTitle().equalsIgnoreCase(title));
         Iterator<Note> iterator = notes.iterator();
         while (iterator.hasNext()) {
             Note note = iterator.next();
             if (note.getTitle().equalsIgnoreCase(title)) {
                 iterator.remove();
-                System.out.println(LocalizationManager.get("delete.success"));
+                System.out.println(LocalizationManager.get("delete.success", title));
                 saveToFile();// Автоматически сохраняем после удаления
+                return;
             }
         }
         System.out.println(LocalizationManager.get("delete.not_found", title));
+    }
+
+    public void clearNoteList()
+    {
+        notes.clear();
+        saveToFile();
     }
 
     public void findNote(String notePart) {
@@ -64,10 +72,8 @@ public class NoteManager {
         boolean found = false;
 
         for (Note note : notes) {
-            if (note.getTitle().toLowerCase().contains(notePart.toLowerCase())
-                    || note.getContent().toLowerCase().contains(notePart.toLowerCase())) {
-                System.out.println(note.getTitle());
-                System.out.println("\t" + note.getContent());
+            if (note.getTitle().toLowerCase().contains(notePart.toLowerCase()) || note.getContent().toLowerCase().contains(notePart.toLowerCase())) {
+                System.out.println(note.getTitle() + " -> " + note.getContent());
                 found = true;
             }
         }
@@ -79,5 +85,11 @@ public class NoteManager {
     //сохранить текущий список в файл
     private void saveToFile() {
         FileStorage.saveNotes(notes);
+    }
+
+    public void saveLoadedNotes() {
+        if (!notes.isEmpty()) {
+            saveToFile();
+        }
     }
 }
